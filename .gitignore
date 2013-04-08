@@ -25,3 +25,5 @@
 *.exe
 *.lib
 *.ipch
+*.suo
+

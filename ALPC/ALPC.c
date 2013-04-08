@@ -49,6 +49,7 @@ void runServer(TCHAR *ServerName)
 		return;
 	}
 
+	
 	status = ZwCreateSection(&SectionHandle,
 							 SECTION_MAP_READ | SECTION_MAP_WRITE,
 							 NULL,	//backed by the pagefile
@@ -60,6 +61,18 @@ void runServer(TCHAR *ServerName)
 	if (!NT_SUCCESS(status))
 	{
 		printf("ZwCreateSection error:%X\n",status);
+		return;
+	}
+
+	ALPC_DATA_VIEW_ATTR adva;
+	adva.Flags = 0;	//unknown
+	adva.SectionHandle = SectionHandle;
+	adva.ViewBase = 0;
+	adva.ViewSize = SectionSize.LowPart;
+	status = NtAlpcCreateSectionView(hConnectPort,0,&adva);
+	if (!NT_SUCCESS(status))
+	{
+		printf("NtAlpcCreateSectionView error:%X\n",status);
 		return;
 	}
 
