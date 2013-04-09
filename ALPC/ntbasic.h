@@ -1,6 +1,6 @@
 #ifndef _NTBASIC_H
 #define _NTBASIC_H
-#include <windows.h>
+#include <Windows.h>
 
 #ifndef _NTDEF_
 

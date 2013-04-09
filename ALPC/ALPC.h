@@ -1,11 +1,10 @@
 #pragma once
 
-
-
 #include "UserModeDefs.h"
 #include "ntlpcapi.h"
 #include <tchar.h>
 #include <stdio.h>
+
 
 void runServer(TCHAR *ServerName);
 
@@ -52,5 +51,7 @@ typedef struct _TRANSFERRED_MESSAGE
 	BOOLEAN			UseSection;
 	WCHAR			Message[128];
 } TRANSFERRED_MESSAGE,*PTRANSFERRED_MESSAGE;
+
+CRITICAL_SECTION cs;
 
 
