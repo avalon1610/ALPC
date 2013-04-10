@@ -5,7 +5,7 @@
 #include <tchar.h>
 #include <stdio.h>
 
-
+void Connect(TCHAR *ServerName);
 void runServer(TCHAR *ServerName);
 
 #define InitializeAlpcPortAttributes(p,f,s,mml,mb,mpu,mss,mvs,mtss,dot) { \

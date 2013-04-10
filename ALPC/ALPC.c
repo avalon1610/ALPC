@@ -1,6 +1,38 @@
 #include "ALPC.h"
 #pragma comment(lib,"ntdll.lib")
 
+void Connect(TCHAR *ServerName)
+{
+	HANDLE ConnectionHandle = si.LPCPortHandle;
+	UNICODE_STRING usPortName;
+	NTSTATUS status;
+	OBJECT_ATTRIBUTES oa;
+	PORT_MESSAGE ConnectionMessage;
+	ULONG BufferLength = sizeof(PORT_MESSAGE);
+	ALPC_PORT_ATTRIBUTES apa;
+
+
+	RtlInitUnicodeString(&usPortName,ServerName);
+	status = NtAlpcConnectPort(&ConnectionHandle,
+							   &usPortName,
+							   &oa,
+							   0x40000,//PortAttributes
+							   0,	//Flags
+							   0,	//RequiredServerSid
+							   &ConnectionMessage,
+							   &BufferLength,
+							   0,	//OutMessageAttributes
+							   0,	//InMessageAttributes
+							   0);	//timeout
+	if (!NT_SUCCESS(status))
+	{
+		printf("NtAlpcConnectPort error:%X",status);
+		return;
+	}
+
+	printf("Connected to Server:%S",ServerName);
+}
+
 NTSTATUS AcceptConnectPort (PPORT_MESSAGE ConnectionRequest,PVOID Attr)
 {
 	NTSTATUS status;
@@ -50,9 +82,9 @@ void ServerProc(SERVER_INFO *si)
 
 	//for NtAlpcSendWaitReceivePort
 	HANDLE ConnectionHandle = si->LPCPortHandle;
-	PORT_MESSAGE SendMessage,ReceiveMessage;
+	PORT_MESSAGE /*SendMessage,*/ReceiveMessage;
 	ALPC_MESSAGE_ATTRIBUTES SendMessageAttributes,ReceiveMessageAttributes;
-	ULONG BufferLength;
+	ULONG BufferLength = sizeof(PORT_MESSAGE);
 	LARGE_INTEGER timeout = {0};
 
 	// AlpcInitializeMessageAttribute
@@ -74,17 +106,16 @@ void ServerProc(SERVER_INFO *si)
 	{
 		while (TRUE)
 		{
-			do 
-			{
-				status = NtAlpcSendWaitReceivePort(ConnectionHandle,
-													0x10000,			//Flags, why 0x10000
-													0,//&SendMessage,
-													0,//&SendMessageAttributes,
-													&ReceiveMessage,
-													&BufferLength,
-													&ReceiveMessageAttributes,
-													0);
-			} while (!NT_SUCCESS(status));
+			printf("Server Running...");
+			status = NtAlpcSendWaitReceivePort(ConnectionHandle,
+											   0,//0x10000,			//Flags, why 0x10000
+											   0,//&SendMessage,
+											   0,//&SendMessageAttributes,
+											   &ReceiveMessage,
+											   &BufferLength,
+											   &ReceiveMessageAttributes,
+											   0 /*timeout*/);
+			
 
 			if (status == 0x00000102) // timeout)
 			{
@@ -99,6 +130,7 @@ void ServerProc(SERVER_INFO *si)
 		}
 
 		KeepRunning = AlpcGetMessageAttribute(&ReceiveMessageAttributes,KeepRunningAttributes);
+
 	} while (KeepRunning);
 	
 }
@@ -112,6 +144,7 @@ void runServer(TCHAR *ServerName)
 	ALPC_PORT_ATTRIBUTES apa;
 	SECURITY_QUALITY_OF_SERVICE sqos;
 	LARGE_INTEGER SectionSize = {0x9000};
+	HANDLE hThread;
 	ULONG Flags = 0; //²ÂµÄ
 	SIZE_T MaxMessageLength = PORT_MAXIMUM_MESSAGE_LENGTH;
 
@@ -128,9 +161,10 @@ void runServer(TCHAR *ServerName)
 	RtlZeroMemory(&sqos,sizeof(SECURITY_QUALITY_OF_SERVICE));
 	InitializeAlpcPortAttributes(&apa,Flags,sqos,MaxMessageLength,MemoryBandwidth,MaxPoolUsage,\
 		MaxSectionSize,MaxViewSize,MaxTotalSectionSize,DupObjectType);
+	//RtlZeroMemory(&apa,sizeof(ALPC_PORT_ATTRIBUTES));
 
 	RtlInitUnicodeString(&usPortName,ServerName);
-	InitializeObjectAttributes(&oa,&usPortName,0,NULL,NULL);
+	InitializeObjectAttributes(&oa,&usPortName,0x200,0,NULL);
 
 	status = NtAlpcCreatePort(&hConnectPort,&oa,&apa);
 	if (!NT_SUCCESS(status))
@@ -170,9 +204,10 @@ void runServer(TCHAR *ServerName)
 
 	si.LPCPortHandle = hConnectPort;
 	si.SectionHandle = SectionHandle;
-	if (!CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)&ServerProc,(LPVOID)&si,0,NULL))
+	if (!(hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)&ServerProc,(LPVOID)&si,0,NULL)))
 	{
 		printf("CreateThread error:%d\n",GetLastError());
 		return;
 	}
+
 }

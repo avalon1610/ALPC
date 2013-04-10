@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ALPC", "ALPC\ALPC.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{1B255101-AA4C-42BB-ADB4-11EA366CAF20}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{47CDA44C-516E-49F1-8C27-D68F619704D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -23,6 +25,12 @@ Global
 		{1B255101-AA4C-42BB-ADB4-11EA366CAF20}.Release|Win32.ActiveCfg = Release|Win32
 		{1B255101-AA4C-42BB-ADB4-11EA366CAF20}.Release|Win32.Build.0 = Release|Win32
 		{1B255101-AA4C-42BB-ADB4-11EA366CAF20}.Release|Win32.Deploy.0 = Release|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Debug|Win32.Build.0 = Debug|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Debug|Win32.Deploy.0 = Debug|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Release|Win32.ActiveCfg = Release|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Release|Win32.Build.0 = Release|Win32
+		{47CDA44C-516E-49F1-8C27-D68F619704D2}.Release|Win32.Deploy.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

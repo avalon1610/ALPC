@@ -14,7 +14,6 @@
 *.a
 
 *.log
-*.idb
 *.pdb
 *.lastbuildstate
 *.tlog
@@ -26,4 +25,6 @@
 *.lib
 *.ipch
 *.suo
+Debug
+
 
